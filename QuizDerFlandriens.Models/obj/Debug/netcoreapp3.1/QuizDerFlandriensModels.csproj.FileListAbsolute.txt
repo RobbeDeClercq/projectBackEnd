@@ -1,0 +1,10 @@
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\bin\Debug\netcoreapp3.1\QuizDerFlandriensModels.deps.json
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\bin\Debug\netcoreapp3.1\QuizDerFlandriensModels.dll
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\bin\Debug\netcoreapp3.1\QuizDerFlandriensModels.pdb
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\obj\Debug\netcoreapp3.1\QuizDerFlandriensModels.csprojAssemblyReference.cache
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\obj\Debug\netcoreapp3.1\QuizDerFlandriensModels.AssemblyInfoInputs.cache
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\obj\Debug\netcoreapp3.1\QuizDerFlandriensModels.AssemblyInfo.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\obj\Debug\netcoreapp3.1\QuizDerFlandriensModels.dll
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\obj\Debug\netcoreapp3.1\QuizDerFlandriensModels.pdb
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\bin\Debug\netcoreapp3.1\QuizDerFlandriensModels.runtimeconfig.json
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriensModels\bin\Debug\netcoreapp3.1\QuizDerFlandriensModels.runtimeconfig.dev.json
