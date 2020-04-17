@@ -20,11 +20,10 @@ namespace QuizDerFlandriens.Models.Data
         public virtual DbSet<Difficulty> Difficulties { get; set; }
         public virtual DbSet<Result> Results { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
-            
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); //must voor identity
         }
-
     }
 }

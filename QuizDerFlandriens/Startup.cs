@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using QuizDerFlandriens.Models.Data;
+using QuizDerFlandriens.Models;
+using QuizDerFlandriens.Models.Repositories;
 
 namespace QuizDerFlandriens
 {
@@ -30,8 +32,9 @@ namespace QuizDerFlandriens
             services.AddDbContext<QuizDerFlandriensContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddDefaultIdentity<Person>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<QuizDerFlandriensContext>();
+            services.AddScoped<IQuizRepo, QuizRepo>();
             services.AddControllersWithViews();
             services.AddRazorPages();
         }
