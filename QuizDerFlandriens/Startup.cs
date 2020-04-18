@@ -29,18 +29,24 @@ namespace QuizDerFlandriens
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<QuizDerFlandriensContext>(options =>
+            try
+            {
+                services.AddDbContext<QuizDerFlandriensContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<Person>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<QuizDerFlandriensContext>();
-            services.AddScoped<IQuizRepo, QuizRepo>();
-            services.AddControllersWithViews();
-            services.AddRazorPages();
+                services.AddIdentity<Person, IdentityRole>().AddEntityFrameworkStores<QuizDerFlandriensContext>();
+                services.AddScoped<IQuizRepo, QuizRepo>();
+                services.AddControllersWithViews();
+                services.AddRazorPages();
+            }
+            catch(Exception exc)
+            {
+                throw new Exception(exc.Message);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleMgr, UserManager<Person> userMgr, QuizDerFlandriensContext context)
         {
             if (env.IsDevelopment())
             {

@@ -19,8 +19,6 @@ namespace QuizDerFlandriens.Controllers
         {
             _logger = logger;
             this.quizRepo = quizRepo;
-
-            //quizRepo.DeleteQuiz(Guid.Parse("70dc72d4-ca07-48eb-8e0e-df2d567f5b62"));
         }
 
         public async Task Test()
@@ -58,7 +56,7 @@ namespace QuizDerFlandriens.Controllers
 
         public IActionResult Index()
         {
-            Test();
+            //Test();
             return View();
         }
 

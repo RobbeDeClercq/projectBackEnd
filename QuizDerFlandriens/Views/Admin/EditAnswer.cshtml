@@ -1,0 +1,61 @@
+﻿@model QuizDerFlandriens.Models.Answer
+
+@{
+    ViewData["Title"] = "EditAnswer";
+}
+
+<h1>EditAnswer</h1>
+
+<h4>Answer</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditAnswer" asp-route-QuestionId="@ViewData["QuestionId"]" asp-route-QuizId="@ViewData["QuizId"]" >
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FotoURL" class="control-label"></label>
+                <input asp-for="FotoURL" class="form-control" />
+                <span asp-validation-for="FotoURL" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Correct" class="control-label"></label>
+                <select asp-for="Correct" class="form-control">
+                    @if (ViewData["IsCorrect"].ToString() == "False")
+                    {
+                        <option value="0" selected>False</option>
+                        <option value="1">True</option>
+                    }
+                    else
+                    {
+                        <option value="0">False</option>
+                        <option value="1" selected>True</option>
+                    }
+
+                </select>
+                <span asp-validation-for="Correct" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestionId" class="control-label"></label>
+                <input asp-for="QuestionId" disabled class="form-control" value="@ViewData["QuestionId"]" />
+                <span asp-validation-for="QuestionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="QuestionAnswers" asp-route-id="@ViewData["QuestionId"]" asp-route-QuizId="@ViewData["QuizId"]">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

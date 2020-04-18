@@ -165,3 +165,14 @@ C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcor
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\QuizDerFlandriens.csproj.CopyComplete
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\QuizDerFlandriens.dll
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\QuizDerFlandriens.pdb
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\Quizzes.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\CreateQuiz.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\EditQuiz.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\DeleteQuiz.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\QuizQuestions.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\CreateQuestion.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\CreateAnswer.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\DeleteQuestion.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\EditQuestion.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\QuestionAnswers.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Admin\EditAnswer.cshtml.g.cs

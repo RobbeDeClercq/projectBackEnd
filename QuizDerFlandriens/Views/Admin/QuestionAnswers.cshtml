@@ -1,0 +1,50 @@
+﻿@model IEnumerable<QuizDerFlandriens.Models.Answer>
+
+@{
+    ViewData["Title"] = "QuestionAnswers";
+}
+
+<h1>QuestionAnswers</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FotoURL)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Correct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Question)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FotoURL)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Correct)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Question.Description)
+            </td>
+            <td>
+                <a asp-action="EditAnswer" asp-route-id="@item.Id" asp-route-QuizId="@ViewData["QuizId"]">Edit</a> |
+                <a asp-action="DeleteAnswer" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<a asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Back to Questions</a>

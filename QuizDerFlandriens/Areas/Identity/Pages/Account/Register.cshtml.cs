@@ -87,7 +87,8 @@ namespace QuizDerFlandriens.Areas.Identity.Pages.Account
             {
                 var user = new Person { UserName = Input.Email, Email = Input.Email, Name = Input.Name, BirthDate = Input.BirthDate };
                 var result = await _userManager.CreateAsync(user, Input.Password);
-                if (result.Succeeded)
+                var roleResult = await _userManager.AddToRoleAsync(user, "Player");
+                if (result.Succeeded && roleResult.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 

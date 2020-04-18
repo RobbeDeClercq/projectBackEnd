@@ -61,3 +61,4 @@ C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens.API\obj\Debug\ne
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens.API\obj\Debug\netcoreapp3.1\QuizDerFlandriens.API.csproj.CopyComplete
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens.API\obj\Debug\netcoreapp3.1\QuizDerFlandriens.API.dll
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens.API\obj\Debug\netcoreapp3.1\QuizDerFlandriens.API.pdb
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens.API\obj\Debug\netcoreapp3.1\QuizDerFlandriens.API.csprojAssemblyReference.cache
