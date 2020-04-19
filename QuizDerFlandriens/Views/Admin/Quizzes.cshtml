@@ -7,7 +7,7 @@
 <h1>Quizzes</h1>
 
 <p>
-    <a asp-action="CreateQuiz">Create New</a>
+    <a class="btn btn-success" asp-action="CreateQuiz">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -46,12 +46,26 @@
                     else
                     {
                         int countTrues = 0;
+                        bool onlyDiscriptions = true;
+                        bool onlyPhotos = true;
                         foreach (Answer answer in question.Answers)
                         {
                             if (answer.Correct.ToString() == "True")
                             {
                                 countTrues = countTrues + 1;
                             }
+                            if(answer.Description == null)
+                            {
+                                onlyDiscriptions = false;
+                            }
+                            if(answer.FotoURL == null)
+                            {
+                                onlyPhotos = false;
+                            }
+                        }
+                        if(!onlyDiscriptions && !onlyPhotos)
+                        {
+                            questionError = true;
                         }
                         if (countTrues == 0)
                         {

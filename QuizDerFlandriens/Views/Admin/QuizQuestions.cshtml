@@ -31,13 +31,27 @@
             else
             {
                 int countTrues = 0;
-                bool onlyDiscriptions = false;
+                bool onlyDiscriptions = true;
+                bool onlyPhotos = true;
                 foreach (Answer answer in item.Answers)
                 {
                     if (answer.Correct.ToString() == "True")
                     {
                         countTrues = countTrues + 1;
                     }
+                    if(answer.Description == null)
+                    {
+                        onlyDiscriptions = false;
+                    }
+                    if(answer.FotoURL == null)
+                    {
+                        onlyPhotos = false;
+                    }
+                }
+                if(!onlyDiscriptions && !onlyPhotos)
+                {
+                    error = true;
+                    errorString = "<br><span style='color: white; font-weight: 600;'>There are photo answers and non-photo answers!</span>";
                 }
                 if (countTrues == 0)
                 {
