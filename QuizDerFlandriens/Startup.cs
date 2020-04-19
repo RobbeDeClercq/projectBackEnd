@@ -34,7 +34,10 @@ namespace QuizDerFlandriens
                 services.AddDbContext<QuizDerFlandriensContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-                services.AddIdentity<Person, IdentityRole>().AddEntityFrameworkStores<QuizDerFlandriensContext>();
+                services.AddDefaultIdentity<Person>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<QuizDerFlandriensContext>();
+                //services.AddIdentity<Person, IdentityRole>().AddEntityFrameworkStores<QuizDerFlandriensContext>();
                 services.AddScoped<IQuizRepo, QuizRepo>();
                 services.AddControllersWithViews();
                 services.AddRazorPages();
@@ -46,7 +49,8 @@ namespace QuizDerFlandriens
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, RoleManager<IdentityRole> roleMgr, UserManager<Person> userMgr, QuizDerFlandriensContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env
+            , RoleManager<IdentityRole> roleMgr, UserManager<Person> userMgr, QuizDerFlandriensContext context)
         {
             if (env.IsDevelopment())
             {
@@ -71,9 +75,12 @@ namespace QuizDerFlandriens
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Quiz}/{action=Quizzes}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            QuizDerFlandriensContextExtensions.SeedRoles(roleMgr).Wait();
+            QuizDerFlandriensContextExtensions.SeedUsers(userMgr).Wait();
         }
     }
 }

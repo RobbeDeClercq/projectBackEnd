@@ -1,0 +1,69 @@
+﻿@model IEnumerable<QuizDerFlandriens.Models.Quiz>
+
+@{
+    ViewData["Title"] = "Quizzes";
+}
+
+<h1>Quizzes</h1>
+
+<div class="card-deck">
+@{
+    int counter = 0;
+    foreach (var item in Model)
+    {
+        if (counter == 3)
+        {
+            @Html.Raw("</div>")
+            @Html.Raw("<div class='card-deck'>")
+        }
+        <div class="card border-secondary mb-3" style="max-width: 20rem;">
+            <div class="card-header">
+                @item.Subject
+            </div>
+            @{
+                switch (item.Difficulty.Description)
+                {
+                    case "Easy":
+                        <div class="card-header text-white bg-success">
+                            Easy
+                        </div>
+                        break;
+                    case "Medium":
+                        <div class="card-header text-white bg-warning">
+                            Medium
+                        </div>
+                        break;
+                    case "Hard":
+                        <div class="card-header text-white bg-danger">
+                            Hard
+                        </div>
+                        break;
+                }
+            }
+            <div class="card-body">
+                <p class="card-text">@item.Description</p>
+                <a class="btn btn-primary stretched-link" href="#">Go to Quiz!</a>
+            </div>
+            <div class="card-footer">
+                @{
+                    List<int> scores = new List<int>();
+                    foreach (var result in item.Results)
+                    {
+                        scores.Add(result.Score);
+                    }
+                    if (scores.Count() > 0)
+                    {
+                        <p class="card-text">The current highscore is: @scores.Max()</p>
+                    }
+                    else
+                    {
+                        <p class="card-text">There is no current highscore yet</p>
+                    }
+                }
+            </div>
+        </div>
+        counter++;
+    }
+}
+</div>
+

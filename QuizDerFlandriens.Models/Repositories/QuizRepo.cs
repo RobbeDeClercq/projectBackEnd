@@ -58,7 +58,7 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Quiz>> GetAllQuizzesAsync()
         {
-            var result = context.Quizzes.Include(e => e.Difficulty).OrderByDescending(e => e.Subject);
+            var result = context.Quizzes.Include(e => e.Difficulty).Include(e => e.Questions).Include(e => e.Results).OrderByDescending(e => e.Subject);
             return await Task.FromResult(result);
         }
         public async Task<Quiz> GetQuizForIdAsync(Guid QuizId)

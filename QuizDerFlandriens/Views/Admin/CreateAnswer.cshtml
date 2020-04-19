@@ -54,8 +54,9 @@ else
                 <span asp-validation-for="Correct" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="QuestionId" class="control-label"></label>
-                <input asp-for="QuestionId" disabled class="form-control" value="@ViewData["QuestionId"]" />
+                <label asp-for="QuestionId" class="control-label">Question</label>
+                <input asp-for="QuestionId" type="hidden" disabled class="form-control" value="@ViewData["QuestionId"]" />
+                <textarea readonly class="form-control" rows="3">@ViewData["QuestionName"]</textarea>
             </div>
             <div class="form-group">
                 <input type="submit" value="Add Answer" class="btn btn-success" />
@@ -63,18 +64,17 @@ else
                 {
                     <a class="btn btn-danger" asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Done</a>
                 }
+                @if (bool.Parse(ViewData["CreateSingle"].ToString()))
+                {
+                    <a class="btn btn-primary" asp-action="QuestionAnswers" asp-route-id="@ViewData["QuestionId"]"
+                        asp-route-QuizId="@ViewData["QuizId"]" asp-route-QuestionName="@ViewData["QuestionName"]">Back to List</a>
+                }
             </div>
         </form>
     </div>
 </div>
 
-@if (bool.Parse(ViewData["CreateSingle"].ToString()))
-{
-    <div>
-        <a class="btn btn-primary" asp-action="QuestionAnswers" asp-route-id="@ViewData["QuestionId"]"
-            asp-route-QuizId="@ViewData["QuizId"]" asp-route-QuestionName="@ViewData["QuestionName"]">Back to List</a>
-    </div>
-}
+
 
 
 

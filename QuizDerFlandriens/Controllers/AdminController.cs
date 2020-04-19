@@ -182,9 +182,11 @@ namespace QuizDerFlandriens.Controllers
             }
             return View(questions);
         }
-        public ActionResult CreateQuestion(Guid id)
+        public async Task<IActionResult> CreateQuestion(Guid id)
         {
             ViewData["QuizId"] = id;
+            Quiz quiz = await quizRepo.GetQuizForIdAsync(id);
+            ViewData["QuizName"] = quiz.Subject;
             return View();
         }
         [HttpPost]
@@ -278,11 +280,8 @@ namespace QuizDerFlandriens.Controllers
         {
             IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
             var answerCount = answers.Count();
-            if (createSingleAnswer)
-            {
-                Question question = await quizRepo.GetQuestionForIdAsync(id);
-                ViewData["QuestionName"] = question.Description;
-            }
+            Question question = await quizRepo.GetQuestionForIdAsync(id);
+            ViewData["QuestionName"] = question.Description;
             ViewData["answersCount"] = answerCount;
             ViewData["QuestionId"] = id;
             ViewData["QuizId"] = QuizId;
