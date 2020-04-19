@@ -5,6 +5,50 @@
 }
 
 <h1>Answers of @ViewData["QuestionName"]</h1>
+@{
+    string errorString = "";
+    if (Model.Count() < 2)
+    {
+        errorString = "<h3 class='text-danger'>Not enough answers in this question!</h3>";
+    }
+}
+@{ 
+    int countTrues = 0;
+    bool onlyDiscriptions = true;
+    bool onlyPhotos = true;
+    foreach (Answer answer in Model)
+    {
+        if (answer.Correct.ToString() == "True")
+        {
+            countTrues = countTrues + 1;
+        }
+        if (answer.Description == null)
+        {
+            onlyDiscriptions = false;
+        }
+        if (answer.FotoURL == null)
+        {
+            onlyPhotos = false;
+        }
+    }
+    if (!onlyDiscriptions && !onlyPhotos)
+    {
+        errorString = "<h3 class='text-danger'>There are photo answers and non-photo answers!</h3>";
+    }
+    if (countTrues == 0)
+    {
+        errorString = "<h3 class='text-danger'>There are no correct answers!</h3>";
+    }
+    else if (countTrues > 1)
+    {
+        errorString = "<h3 class='text-danger'>There are too many correct answers!</h3>";
+    }
+}
+@if(errorString != "")
+{
+    @Html.Raw(errorString);
+}
+
 @if (Model.Count() < 10)
 {
     <p>

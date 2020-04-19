@@ -5,7 +5,17 @@
 }
 
     <h1>Questions of Quiz: @ViewData["QuizName"]</h1>
-
+@{ 
+    string errorString = "";
+    if (Model.Count() == 0)
+    {
+        errorString = "<h3 class='text-danger'>There are no questions in this quiz</h3>";
+    }
+    if(errorString != "")
+    {
+        @Html.Raw(errorString);
+    }
+}
 <p>
     <a class="btn btn-success" asp-action="CreateQuestion" asp-route-id="@ViewData["QuizId"]">Create New</a>
 </p>
@@ -19,10 +29,23 @@
         </tr>
     </thead>
     <tbody>
+        @{
+            errorString = "";
+            if (Model.Count() == 0)
+            {
+                errorString = "<span text='text-warning'>No Questions...</span>";
+            }
+            if (errorString != "")
+            {
+                <th>
+                    @Html.Raw(errorString)
+                </th>
+            }
+        }
         @foreach (var item in Model)
         {
             bool error = false;
-            string errorString = "";
+            errorString = "";
             if (item.Answers.Count() < 2)
             {
                 error = true;
@@ -39,16 +62,16 @@
                     {
                         countTrues = countTrues + 1;
                     }
-                    if(answer.Description == null)
+                    if (answer.Description == null)
                     {
                         onlyDiscriptions = false;
                     }
-                    if(answer.FotoURL == null)
+                    if (answer.FotoURL == null)
                     {
                         onlyPhotos = false;
                     }
                 }
-                if(!onlyDiscriptions && !onlyPhotos)
+                if (!onlyDiscriptions && !onlyPhotos)
                 {
                     error = true;
                     errorString = "<br><span style='color: white; font-weight: 600;'>There are photo answers and non-photo answers!</span>";

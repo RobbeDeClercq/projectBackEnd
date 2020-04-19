@@ -58,7 +58,7 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Quiz>> GetAllQuizzesAsync()
         {
-            var result = context.Quizzes.Include(e => e.Difficulty).OrderBy(e => e.Subject);
+            var result = context.Quizzes.Include(e => e.Difficulty).OrderByDescending(e => e.Subject);
             return await Task.FromResult(result);
         }
         public async Task<Quiz> GetQuizForIdAsync(Guid QuizId)
@@ -131,7 +131,7 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Question>> GetAllQuestionsByQuizId(Guid QuizId)
         {
-            var result = context.Questions.Where(e => e.QuizId == QuizId).OrderBy(e => e.Description);
+            var result = context.Questions.Where(e => e.QuizId == QuizId).OrderByDescending(e => e.Description);
             return await Task.FromResult(result);
         }
         public async Task<Question> GetQuestionForIdAsync(Guid QuestionId)
@@ -192,7 +192,7 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Answer>> GetAllAnswersByQuestionId(Guid QuestionId)
         {
-            var result = context.Answers.Include(e => e.Question).Where(e => e.QuestionId == QuestionId).OrderBy(e => e.Description);
+            var result = context.Answers.Include(e => e.Question).Where(e => e.QuestionId == QuestionId).OrderByDescending(e => e.Description);
             return await Task.FromResult(result);
         }
         public async Task<Answer> GetAnswerForIdAsync(Guid AnswerId)
@@ -253,12 +253,12 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Result>> GetAllResultsByQuizId(Guid QuizId)
         {
-            var result = context.Results.Where(e => e.QuizId == QuizId).OrderBy(e => e.Score);
+            var result = context.Results.Include(e => e.Person).Where(e => e.QuizId == QuizId).OrderByDescending(e => e.Score);
             return await Task.FromResult(result);
         }
         public async Task<Result> GetResultByIdAsync(Guid ResultId)
         {
-            var result = context.Results.Where(e => e.Id == ResultId).FirstOrDefault<Result>();
+            var result = context.Results.Where(e => e.Id == ResultId).Include(e => e.Quiz).Include(e => e.Person).FirstOrDefault<Result>();
             return await Task.FromResult(result);
         }
         public async Task DeleteResult(Guid ResultId)

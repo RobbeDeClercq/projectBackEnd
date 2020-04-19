@@ -134,6 +134,38 @@ namespace QuizDerFlandriens.Controllers
             }
         }
 
+        //Results
+        public async Task<IActionResult> QuizResults(Guid QuizId, string quizName)
+        {
+            IEnumerable<Result> results = null;
+            results = await quizRepo.GetAllResultsByQuizId(QuizId);
+            ViewData["QuizName"] = quizName;
+            return View(results);
+        }
+        public async Task<IActionResult> DeleteResult(Guid id, Guid QuizId, string quizName)
+        {
+            Result result = null;
+            result = await quizRepo.GetResultByIdAsync(id);
+            ViewData["QuizId"] = QuizId;
+            ViewData["QuizName"] = quizName;
+            return View(result);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteResult(Guid id, IFormCollection collection, Guid QuizId, string quizName)
+        {
+            try
+            {
+                await quizRepo.DeleteResult(id);
+                return RedirectToAction(nameof(QuizResults), new { QuizId = QuizId, quizName = quizName });
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
         //Questions
         public async Task<IActionResult> QuizQuestions(Guid id)
         {

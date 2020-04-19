@@ -104,7 +104,8 @@
             </td>
             <td>
                 <a class="btn btn-primary" asp-action="EditQuiz" asp-route-id="@item.Id">Edit</a>
-                <a class="btn btn-success" asp-action="QuizQuestions" asp-route-id="@item.Id">Questions</a>
+                <a class="btn btn-success" asp-action="QuizQuestions" asp-route-id="@item.Id">Questions</a><br>
+                <a class="btn btn-info" asp-action="QuizResults" asp-route-QuizId="@item.Id" asp-route-quizName="@item.Subject">Results</a>
                 @if (error)
                 {
                     <a class="btn btn-warning" asp-action="DeleteQuiz" asp-route-id="@item.Id">Delete</a>
