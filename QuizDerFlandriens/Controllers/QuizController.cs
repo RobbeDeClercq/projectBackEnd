@@ -33,5 +33,41 @@ namespace QuizDerFlandriens.Controllers
             }
             return View(quizzes);
         }
+        public async Task<IActionResult> PlayQuiz(Guid id)
+        {
+            IEnumerable<Question> questions = await quizRepo.GetAllQuestionsByQuizId(id);
+            return RedirectToAction(nameof(ShowQuestion), new { quizId = id, currentQuestion = 0, score = 0 });
+        }
+
+        public async Task<IActionResult> ShowQuestion(Guid quizId, int currentQuestion, int score)
+        {
+            IEnumerable<Question> questions = await quizRepo.GetAllQuestionsByQuizId(quizId);
+            List<Question> questionsList = questions.ToList();
+            ViewData["PotentialScore"] = currentQuestion;
+            ViewData["Score"] = score;
+            if(currentQuestion == questionsList.Count())
+            {
+                return RedirectToAction(nameof(EndQuiz));
+            }
+            Question question = await quizRepo.GetQuestionForIdAsync(questionsList[currentQuestion].Id);
+            return View(question);
+        }
+
+        public async Task<IActionResult> CheckAnswer(bool isCorrect, Guid quizId, int currentQuestion, int score)
+        {
+            if (isCorrect)
+            {
+                score++;
+            }
+            currentQuestion++;
+            return RedirectToAction(nameof(ShowQuestion), new { quizId = quizId, currentQuestion = currentQuestion, score = score });
+        }
+
+        private async Task<IActionResult> EndQuiz()
+        {
+            return View();
+        }
+
+
     }
 }

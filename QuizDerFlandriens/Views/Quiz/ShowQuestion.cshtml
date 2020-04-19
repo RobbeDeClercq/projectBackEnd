@@ -1,0 +1,51 @@
+﻿@model QuizDerFlandriens.Models.Question
+
+@{
+    ViewData["Title"] = "ShowQuestion";
+}
+
+<h1>@Model.Description</h1>
+<h5 class="text-primary">Current Score: @ViewData["Score"]/@ViewData["PotentialScore"]</h5>
+<hr />
+
+<div class="card-deck">
+    @foreach (Answer answer in Model.Answers)
+    {
+        if (answer.Description != null)
+        {
+            <div class="card btn btn-primary mb-@Model.Answers.Count()">
+                <h5><a class="stretched-link text-white"
+                                            style="
+                                            text-decoration: none;
+                                            "
+                       asp-action="CheckAnswer" 
+                       asp-route-isCorrect="@answer.Correct"
+                       asp-route-QuizId="@Model.QuizId"
+                       asp-route-currentQuestion="@ViewData["PotentialScore"]"
+                       asp-route-score="@ViewData["Score"]">@answer.Description</a></h5>
+            </div>
+        }
+        else if(answer.FotoURL != null)
+        {
+            <div class="card text-white border-light mb-@Model.Answers.Count()">
+                <div class="card-body text-center">
+                    @{
+                        var photoPath = "~/images/" + answer.FotoURL;
+                        <a class="stretched-link text-white"
+                                            style="
+                                            text-decoration: none;
+                                            "
+                       asp-action="CheckAnswer" 
+                       asp-route-isCorrect="@answer.Correct"
+                       asp-route-QuizId="@Model.QuizId"
+                       asp-route-currentQuestion="@ViewData["PotentialScore"]"
+                       asp-route-score="@ViewData["Score"]">
+                            <img class="card-img-top" src="@photoPath" asp-append-version="true" />
+                        </a>
+                    }                                        
+                </div>
+            </div>
+        }
+    }
+</div>
+    

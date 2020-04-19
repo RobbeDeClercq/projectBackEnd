@@ -7,10 +7,18 @@
 <h1>Quizzes</h1>
 
 <div class="card-deck">
+    @if (Model.Count() == 0)
+    {
+        <div class="jumbotron">
+            <h1 class="display-3">There are no quizzes created yet. Please return later...</h1>
+        </div>
+    }
     @{
         int counter = 0;
+        List<bool> validQuizzes = new List<bool>();
         foreach (var item in Model)
         {
+            bool isValidQuiz = true;
             if (item.Questions.Count() != 0)
             {
                 List<bool> validQuestions = new List<bool>();
@@ -57,7 +65,11 @@
                     validQuestions.Add(isValidQuestion);
                 }
 
-                if (validQuestions.Contains(true))
+                if (!validQuestions.Contains(true))
+                {
+                    isValidQuiz = false;
+                }
+                else
                 {
                     if (counter == 3)
                     {
@@ -90,7 +102,7 @@
                         }
                         <div class="card-body">
                             <p class="card-text">@item.Description</p>
-                            <a class="btn btn-primary stretched-link" href="#">Go to Quiz!</a>
+                            <a class="btn btn-primary stretched-link" asp-action="PlayQuiz" asp-route-id="@item.Id">Play Quiz!</a>
                         </div>
                         <div class="card-footer">
                             @{
@@ -113,6 +125,13 @@
                     counter++;
                 }
             }
+            validQuizzes.Add(isValidQuiz);
+        }
+        if (!validQuizzes.Contains(true))
+        {
+            <div class="jumbotron">
+                <h1 class="display-3">There are no valid quizzes. Please return later...</h1>
+            </div>
         }
     }
 </div>
