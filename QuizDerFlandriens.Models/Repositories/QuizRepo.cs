@@ -192,12 +192,12 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Answer>> GetAllAnswersByQuestionId(Guid QuestionId)
         {
-            var result = context.Answers.Where(e => e.QuestionId == QuestionId).OrderBy(e => e.Description);
+            var result = context.Answers.Include(e => e.Question).Where(e => e.QuestionId == QuestionId).OrderBy(e => e.Description);
             return await Task.FromResult(result);
         }
         public async Task<Answer> GetAnswerForIdAsync(Guid AnswerId)
         {
-            var result = context.Answers.Where(e => e.Id == AnswerId).FirstOrDefault<Answer>();
+            var result = context.Answers.Include(e => e.Question).Where(e => e.Id == AnswerId).FirstOrDefault<Answer>();
             return await Task.FromResult(result);
         }
         public async Task<Answer> UpdateAnswer(Answer answer)

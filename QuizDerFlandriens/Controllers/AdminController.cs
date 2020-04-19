@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using QuizDerFlandriens.Models;
 using QuizDerFlandriens.Models.Repositories;
+using QuizDerFlandriens.ViewModels;
 
 namespace QuizDerFlandriens.Controllers
 {
@@ -17,11 +20,13 @@ namespace QuizDerFlandriens.Controllers
     {
         private IQuizRepo quizRepo;
         private UserManager<Person> userManager;
+        private IHostingEnvironment hostingEnvironment;
 
-        public AdminController(IQuizRepo quizRepo, UserManager<Person> userManager)
+        public AdminController(IQuizRepo quizRepo, UserManager<Person> userManager, IHostingEnvironment hostingEnvironment)
         {
             this.quizRepo = quizRepo;
             this.userManager = userManager;
+            this.hostingEnvironment = hostingEnvironment;
         }
 
         //Quizzes
@@ -29,6 +34,18 @@ namespace QuizDerFlandriens.Controllers
         {
             IEnumerable<Quiz> quizzes = null;
             quizzes = await quizRepo.GetAllQuizzesAsync();
+            foreach(Quiz quiz in quizzes)
+            {
+                IEnumerable<Question> questionsEnum = await quizRepo.GetAllQuestionsByQuizId(quiz.Id);
+                foreach(Question question in questionsEnum)
+                {
+                    IEnumerable<Answer> answersEnum = await quizRepo.GetAllAnswersByQuestionId(question.Id);
+                    List<Answer> answers = answersEnum.ToList();
+                    question.Answers = answers;
+                }
+                List<Question> questions = questionsEnum.ToList();
+                quiz.Questions = questions;
+            }
             return View(quizzes);
         }
         public async Task<IActionResult> CreateQuiz()
@@ -121,8 +138,16 @@ namespace QuizDerFlandriens.Controllers
         public async Task<IActionResult> QuizQuestions(Guid id)
         {
             ViewData["QuizId"] = id;
+            Quiz quiz = await quizRepo.GetQuizForIdAsync(id);
+            ViewData["QuizName"] = quiz.Subject;
             IEnumerable<Question> questions = null;
             questions = await quizRepo.GetAllQuestionsByQuizId(id);
+            foreach (Question question in questions)
+            {
+                IEnumerable<Answer> answersEnum = await quizRepo.GetAllAnswersByQuestionId(question.Id);
+                List<Answer> answers = answersEnum.ToList();
+                question.Answers = answers;
+            }
             return View(questions);
         }
         public ActionResult CreateQuestion(Guid id)
@@ -209,11 +234,12 @@ namespace QuizDerFlandriens.Controllers
         }
 
         //Answers
-        public async Task<IActionResult> QuestionAnswers(Guid id, Guid QuizId)
+        public async Task<IActionResult> QuestionAnswers(Guid id, Guid QuizId, string QuestionName)
         {
             ViewData["QuestionId"] = id;
             ViewData["QuizId"] = QuizId;
             IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
+            ViewData["QuestionName"] = QuestionName;
             return View(answers);
         }
         public async Task<IActionResult> CreateAnswer(Guid id, Guid QuizId)
@@ -227,7 +253,7 @@ namespace QuizDerFlandriens.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAnswer(Guid id, IFormCollection collection, Answer answer)
+        public async Task<IActionResult> CreateAnswer(Guid id, IFormCollection collection, AnswerCreateViewModel answer)
         {
             try
             {
@@ -235,11 +261,34 @@ namespace QuizDerFlandriens.Controllers
                 {
                     return BadRequest();
                 }
-                answer.Id = Guid.NewGuid();
-                answer.QuestionId = id;
+                string uniqueFileName = null;
+                if(answer.Foto != null)
+                {
+                    string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+                    uniqueFileName =  Guid.NewGuid().ToString() + "_" + answer.Foto.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    answer.Foto.CopyTo(new FileStream(filePath, FileMode.Create));
+                }
+                Answer newAnswer = new Answer
+                {
+                    Id = Guid.NewGuid(),
+                    Description = answer.Description,
+                    FotoURL = uniqueFileName
+                };
+
+                if (answer.Correct.ToString() == "True")
+                {
+                    newAnswer.Correct = Answer.IsCorrect.True;
+                }
+                else
+                {
+                    newAnswer.Correct = Answer.IsCorrect.False;
+                }
+
+                newAnswer.QuestionId = id;
                 Question question = await quizRepo.GetQuestionForIdAsync(id);
-                answer.Question = question;
-                var created = await quizRepo.AddAnswer(answer);
+                newAnswer.Question = question;
+                var created = await quizRepo.AddAnswer(newAnswer);
                 if (created == null)
                 {
                     throw new Exception("Invalid Entry");
@@ -252,30 +301,64 @@ namespace QuizDerFlandriens.Controllers
                 return View();
             }
         }
-        public async Task<IActionResult> EditAnswer(Guid id, Guid QuizId)
+        public async Task<IActionResult> EditAnswer(Guid id, Guid QuizId, string FotoURL)
         {
             Answer answer = await quizRepo.GetAnswerForIdAsync(id);
+            AnswerEditViewModel answerEdit = new AnswerEditViewModel
+            {
+                Id = answer.Id,
+                Description = answer.Description,
+                FotoURL = answer.FotoURL,
+                QuestionId = answer.QuestionId
+            };
             ViewData["QuestionId"] = answer.QuestionId;
+            ViewData["FotoURL"] = FotoURL;
             ViewData["IsCorrect"] = answer.Correct;
             ViewData["QuizId"] = QuizId;
-            return View(answer);
+            return View(answerEdit);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAnswer(Guid id, IFormCollection collection, Answer answer, Guid QuizId, Guid QuestionId)
+        public async Task<IActionResult> EditAnswer(Guid id, IFormCollection collection, AnswerEditViewModel answer, Guid QuizId, Guid QuestionId, string FotoURL)
         {
             try
             {
+                answer.FotoURL = FotoURL;
                 // TODO: Add update logic here
-                Question question = await quizRepo.GetQuestionForIdAsync(QuestionId);
-                answer.Question = question;
-                var result = await quizRepo.UpdateAnswer(answer);
+                Answer answerUpdate = new Answer
+                {
+                    Id = answer.Id,
+                    Description = answer.Description,
+                    QuestionId = answer.QuestionId,
+                    FotoURL = answer.FotoURL
+                };
+
+                string uniqueFileName = null;
+                if (answer.Foto != null)
+                {
+                    string uploadsFolder = Path.Combine(hostingEnvironment.WebRootPath, "images");
+                    uniqueFileName = Guid.NewGuid().ToString() + "_" + answer.Foto.FileName;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    answer.Foto.CopyTo(new FileStream(filePath, FileMode.Create));
+                    answerUpdate.FotoURL = uniqueFileName;
+                }
+                if (answer.Correct.ToString() == "True")
+                {
+                    answerUpdate.Correct = Answer.IsCorrect.True;
+                }
+                else
+                {
+                    answerUpdate.Correct = Answer.IsCorrect.False;
+                }
+
+                var result = await quizRepo.UpdateAnswer(answerUpdate);
                 if (result == null)
                 {
                     throw new Exception("Invalid Entry");
                 }
-                return RedirectToAction(nameof(QuestionAnswers), new { id = QuestionId, QuizId = QuizId });
+                Question question = await quizRepo.GetQuestionForIdAsync(QuestionId);
+                return RedirectToAction(nameof(QuestionAnswers), new { id = QuestionId, QuizId = QuizId, QuestionName = question.Description });
             }
             catch
             {
@@ -283,5 +366,39 @@ namespace QuizDerFlandriens.Controllers
             }
         }
 
+        public async Task<IActionResult> DeleteAnswer(Guid id)
+        {
+            Answer answer = await quizRepo.GetAnswerForIdAsync(id);
+            Question question = null;
+            question = await quizRepo.GetQuestionForIdAsync(answer.QuestionId);
+            ViewData["QuizId"] = question.QuizId;
+            ViewData["QuestionId"] = answer.QuestionId;
+            if(answer.FotoURL != null)
+            {
+                ViewData["FotoURL"] = answer.FotoURL;
+            }
+            else
+            {
+                ViewData["FotoURL"] = "False";
+            }
+            return View(answer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAnswer(Guid id, IFormCollection collection, Guid QuizId, Guid QuestionId)
+        {
+            try
+            {
+                await quizRepo.DeleteAnswer(id);
+                Question question = await quizRepo.GetQuestionForIdAsync(QuestionId);
+                return RedirectToAction(nameof(QuestionAnswers), new { id = QuestionId, QuizId = QuizId, QuestionName = question.Description });
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+                return View();
+            }
+        }
     }
 }

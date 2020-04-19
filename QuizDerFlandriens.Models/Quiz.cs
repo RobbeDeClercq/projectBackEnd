@@ -15,5 +15,6 @@ namespace QuizDerFlandriens.Models
         public Person Person { get; set; }
         public Difficulty Difficulty { get; set; }
         public List<Result> Results { get; set; }
+        public List<Question> Questions { get; set; }
     }
 }

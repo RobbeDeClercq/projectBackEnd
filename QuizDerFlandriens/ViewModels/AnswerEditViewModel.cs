@@ -1,15 +1,16 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using QuizDerFlandriens.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace QuizDerFlandriens.Models
+namespace QuizDerFlandriens.ViewModels
 {
-    public class Answer
+    public class AnswerEditViewModel
     {
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-
+        public Guid Id { get; set; }
         public enum IsCorrect
         {
             [Display(Name = "False")]
@@ -19,6 +20,7 @@ namespace QuizDerFlandriens.Models
         }
 
         public string? Description { get; set; }
+        public IFormFile? Foto { get; set; }
         public string? FotoURL { get; set; }
         public IsCorrect Correct { get; set; }
         public Guid QuestionId { get; set; }

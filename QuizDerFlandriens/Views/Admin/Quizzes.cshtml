@@ -25,10 +25,62 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            bool error = false;
+            string errorString = "";
+            if (item.Questions.Count() == 0)
+            {
+                error = true;
+                errorString = "<br><span style='color: white; font-weight: 600;'>There are no questions in this quiz</span>";
+            }
+            else
+            {
+                bool questionError = false;
+                foreach (Question question in item.Questions)
+                {
+                    if (question.Answers.Count() < 2)
+                    {
+                        error = true;
+                    }
+                    else
+                    {
+                        int countTrues = 0;
+                        foreach (Answer answer in question.Answers)
+                        {
+                            if (answer.Correct.ToString() == "True")
+                            {
+                                countTrues = countTrues + 1;
+                            }
+                        }
+                        if (countTrues == 0)
+                        {
+                            questionError = true;
+                        }
+                        else if (countTrues > 1)
+                        {
+                            questionError = true;
+                        }
+                    }
+                }
+                if (questionError)
+                {
+                    errorString = "<br><span class='text-warning' style='font-weight: 600;'>Question warning!</span>";
+                }
+            }
+            if (error)
+            {
+                @Html.Raw("<tr class='table-danger'>")
+            }
+            else
+            {
+                @Html.Raw("<tr>")
+            }
+
+
             <td>
                 @Html.DisplayFor(modelItem => item.Subject)
+                @Html.Raw(errorString)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
@@ -37,11 +89,20 @@
                 @Html.DisplayFor(modelItem => item.Difficulty.Description)
             </td>
             <td>
-                <a asp-action="EditQuiz" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="QuizQuestions" asp-route-id="@item.Id">Questions</a> |
-                <a asp-action="DeleteQuiz" asp-route-id="@item.Id">Delete</a>
+                <a class="btn btn-primary" asp-action="EditQuiz" asp-route-id="@item.Id">Edit</a>
+                <a class="btn btn-success" asp-action="QuizQuestions" asp-route-id="@item.Id">Questions</a>
+                @if (error)
+                {
+                    <a class="btn btn-warning" asp-action="DeleteQuiz" asp-route-id="@item.Id">Delete</a>
+                }
+                else
+                {
+                    <a class="btn btn-danger" asp-action="DeleteQuiz" asp-route-id="@item.Id">Delete</a>
+                }
+
             </td>
-        </tr>
-}
-    </tbody>
+            @Html.Raw("</tr>")
+        }
+            
+        </tbody>
 </table>

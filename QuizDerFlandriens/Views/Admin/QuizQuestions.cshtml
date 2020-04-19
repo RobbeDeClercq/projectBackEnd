@@ -4,7 +4,7 @@
     ViewData["Title"] = "QuizQuestions";
 }
 
-<h1>QuizQuestions</h1>
+    <h1>Questions of Quiz: @ViewData["QuizName"]</h1>
 
 <p>
     <a asp-action="CreateQuestion" asp-route-id="@ViewData["QuizId"]">Create New</a>
@@ -15,27 +15,67 @@
             <th>
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quiz)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            bool error = false;
+            string errorString = "";
+            if (item.Answers.Count() < 2)
+            {
+                error = true;
+                errorString = "<br><span style='color: white; font-weight: 600;'>Not enough answers in this question!</span>";
+            }
+            else
+            {
+                int countTrues = 0;
+                foreach (Answer answer in item.Answers)
+                {
+                    if (answer.Correct.ToString() == "True")
+                    {
+                        countTrues = countTrues + 1;
+                    }
+                }
+                if (countTrues == 0)
+                {
+                    error = true;
+                    errorString = "<br><span style='color: white; font-weight: 600;'>There are no correct answers!</span>";
+                }
+                else if (countTrues > 1)
+                {
+                    error = true;
+                    errorString = "<br><span style='color: white; font-weight: 600;'>There are too many correct answers!</span>";
+                }
+            }
+            if (error)
+            {
+                @Html.Raw("<tr class='table-danger'>");
+            }
+            else
+            {
+                @Html.Raw("<tr>");
+            }
             <td>
                 @Html.DisplayFor(modelItem => item.Description)
+                @Html.Raw(errorString)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quiz.Subject)
+                <a class="btn btn-primary" asp-action="EditQuestion" asp-route-id="@item.Id">Edit</a>
+                <a class="btn btn-success" asp-action="QuestionAnswers" asp-route-id="@item.Id" asp-route-QuizId="@ViewData["QuizId"]" asp-route-QuestionName="@item.Description">Answers</a>
+                @if (error)
+                {
+                    <a class="btn btn-warning" asp-action="DeleteQuestion" asp-route-id="@item.Id">Delete</a>
+                }
+                else
+                {
+                    <a class="btn btn-danger" asp-action="DeleteQuestion" asp-route-id="@item.Id">Delete</a>
+                }
+
             </td>
-            <td>
-                <a asp-action="EditQuestion" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="QuestionAnswers" asp-route-id="@item.Id" asp-route-QuizId="@ViewData["QuizId"]">Answers</a> |
-                <a asp-action="DeleteQuestion" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+
+        @Html.Raw("</tr>");
 }
     </tbody>
 </table>
