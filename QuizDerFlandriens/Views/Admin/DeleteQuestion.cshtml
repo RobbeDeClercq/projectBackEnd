@@ -29,6 +29,6 @@
     <form asp-action="DeleteQuestion" asp-route-QuizId="@ViewData["QuizId"]">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Back to List</a>
+        <a class="btn btn-primary" asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Back to List</a>
     </form>
 </div>

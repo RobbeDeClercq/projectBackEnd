@@ -173,7 +173,7 @@ namespace QuizDerFlandriens.Controllers
                     throw new Exception("Invalid Entry");
                 }
 
-                return RedirectToAction(nameof(CreateAnswer), new { id = question.Id, QuizId = id });
+                return RedirectToAction(nameof(CreateAnswer), new { id = question.Id, QuizId = id, createSingleAnswer = false });
             }
             catch (Exception ex)
             {
@@ -242,18 +242,24 @@ namespace QuizDerFlandriens.Controllers
             ViewData["QuestionName"] = QuestionName;
             return View(answers);
         }
-        public async Task<IActionResult> CreateAnswer(Guid id, Guid QuizId)
+        public async Task<IActionResult> CreateAnswer(Guid id, Guid QuizId, bool createSingleAnswer)
         {
             IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
             var answerCount = answers.Count();
+            if (createSingleAnswer)
+            {
+                Question question = await quizRepo.GetQuestionForIdAsync(id);
+                ViewData["QuestionName"] = question.Description;
+            }
             ViewData["answersCount"] = answerCount;
             ViewData["QuestionId"] = id;
             ViewData["QuizId"] = QuizId;
+            ViewData["CreateSingle"] = createSingleAnswer;
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateAnswer(Guid id, IFormCollection collection, AnswerCreateViewModel answer)
+        public async Task<IActionResult> CreateAnswerSubmit(Guid id, IFormCollection collection, AnswerCreateViewModel answer, bool createSingleAnswer)
         {
             try
             {
@@ -293,7 +299,22 @@ namespace QuizDerFlandriens.Controllers
                 {
                     throw new Exception("Invalid Entry");
                 }
-                return RedirectToAction(nameof(CreateAnswer), new { id = id, QuizId = question.QuizId });
+
+                if (createSingleAnswer)
+                {
+                    return RedirectToAction(nameof(QuestionAnswers), new { id = question.Id, QuizId = question.QuizId, QuestionName = question.Description });
+                }
+
+                IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
+                var answerCount = answers.Count();
+                if (answerCount == 10)
+                {
+                    return RedirectToAction(nameof(QuizQuestions), new { id = question.QuizId });
+                }
+                else
+                {
+                    return RedirectToAction(nameof(CreateAnswer), new { id = id, QuizId = question.QuizId });
+                }
             }
             catch (Exception ex)
             {
@@ -301,6 +322,7 @@ namespace QuizDerFlandriens.Controllers
                 return View();
             }
         }
+        
         public async Task<IActionResult> EditAnswer(Guid id, Guid QuizId, string FotoURL)
         {
             Answer answer = await quizRepo.GetAnswerForIdAsync(id);
@@ -311,6 +333,8 @@ namespace QuizDerFlandriens.Controllers
                 FotoURL = answer.FotoURL,
                 QuestionId = answer.QuestionId
             };
+            Question question = await quizRepo.GetQuestionForIdAsync(answer.QuestionId);
+            ViewData["QuestionName"] = question.Description;
             ViewData["QuestionId"] = answer.QuestionId;
             ViewData["FotoURL"] = FotoURL;
             ViewData["IsCorrect"] = answer.Correct;

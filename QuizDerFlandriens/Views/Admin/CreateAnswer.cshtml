@@ -4,23 +4,44 @@
     ViewData["Title"] = "CreateAnswer";
 }
 
-<h1>CreateAnswer</h1>
+<h1>Create Answer</h1>
 
 <h4>Answer</h4>
+@if (int.Parse(ViewData["answersCount"].ToString()) < 2)
+{
+    <h3 class="text-warning">There is a minimum of 2 answers required and a maximum of 10</h3>
+}
+else
+{
+    <h3 class="text-primary">Number of answers: @ViewData["answersCount"]</h3>
+    <h3 class="text-primary">There is a maximum of 10 answers</h3>
+}
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form enctype="multipart/form-data" asp-action="CreateAnswer" asp-route-id="@ViewData["QuestionId"]">
+        @{ 
+            bool singleAnswer = false;
+        }
+        @if (bool.Parse(ViewData["CreateSingle"].ToString()))
+        {
+            singleAnswer = true;
+        }
+        else
+        {
+            singleAnswer = false;
+        }
+
+        <form enctype='multipart/form-data' asp-action='CreateAnswerSubmit' asp-route-id='@ViewData["QuestionId"]' asp-route-createSingleAnswer='@singleAnswer'>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" id="des" class="form-control" onchange="answerDiscrptionOnchange()" />
+                <input asp-for="Description" required id="des" class="form-control" onchange="answerDiscrptionOnchange()" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Foto" class="control-label"></label>
                 <div class="custom-file">
-                    <input asp-for="Foto" id="fileinput" class="form-control custom-file-input" onchange="answerFileOnchange()" />
+                    <input asp-for="Foto" required id="fileinput" class="form-control custom-file-input" onchange="answerFileOnchange()" />
                     <label class="custom-file-label">Choose Photo...</label>
                 </div>
             </div>
@@ -34,28 +55,37 @@
             </div>
             <div class="form-group">
                 <label asp-for="QuestionId" class="control-label"></label>
-                <input asp-for="QuestionId" disabled class ="form-control" value="@ViewData["QuestionId"]" />
+                <input asp-for="QuestionId" disabled class="form-control" value="@ViewData["QuestionId"]" />
             </div>
             <div class="form-group">
-                <input type="submit" value="Add Answer" class="btn btn-primary" />
-                @if (int.Parse(ViewData["answersCount"].ToString()) >= 2)
+                <input type="submit" value="Add Answer" class="btn btn-success" />
+                @if (int.Parse(ViewData["answersCount"].ToString()) >= 2 && !bool.Parse(ViewData["CreateSingle"].ToString()))
                 {
-                    <a asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Done</a>
+                    <a class="btn btn-danger" asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Done</a>
                 }
             </div>
         </form>
     </div>
 </div>
 
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        $(document).ready(function () {
-            $('.custom-file-input').on("change", function () {
-                var fileName = $(this).val().split("\\").pop();
-                $(this).next('.custom-file-label').html(fileName);
-            });
-        });
-    </script>
+@if (bool.Parse(ViewData["CreateSingle"].ToString()))
+{
+    <div>
+        <a class="btn btn-primary" asp-action="QuestionAnswers" asp-route-id="@ViewData["QuestionId"]"
+            asp-route-QuizId="@ViewData["QuizId"]" asp-route-QuestionName="@ViewData["QuestionName"]">Back to List</a>
+    </div>
 }
+
+
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <script>
+            $(document).ready(function () {
+                $('.custom-file-input').on("change", function () {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).next('.custom-file-label').html(fileName);
+                });
+            });
+        </script>
+    }

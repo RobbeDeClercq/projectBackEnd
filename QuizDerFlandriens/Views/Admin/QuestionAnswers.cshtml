@@ -5,6 +5,12 @@
 }
 
 <h1>Answers of @ViewData["QuestionName"]</h1>
+@if (Model.Count() < 10)
+{
+    <p>
+        <a class="btn btn-success" asp-action="CreateAnswer" asp-route-id="@ViewData["QuestionId"]" asp-route-QuizId="@ViewData["QuizId"]" asp-route-createSingleAnswer="@true">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -21,46 +27,47 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @{
-                    if (item.Description != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.Description)
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @{
+                        if (item.Description != null)
+                        {
+                            @Html.DisplayFor(modelItem => item.Description)
+                        }
+                        else
+                        {
+                            <span>No Description</span>
+                        }
+
                     }
-                    else
-                    {
-                        <span>No Description</span>
+                </td>
+                <td>
+                    @{
+                        if (item.FotoURL != null)
+                        {
+                            var photoPath = "~/images/" + item.FotoURL;
+                            <img class="card-img-top" src="@photoPath" asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <span>No Image</span>
+                        }
+
                     }
 
-                }
-            </td>
-            <td>
-                @{
-                    if (item.FotoURL != null)
-                    {
-                        var photoPath = "~/images/" + item.FotoURL;
-                        <img class="card-img-top" src="@photoPath" asp-append-version="true" />
-                    }
-                    else
-                    {
-                        <span>No Image</span>
-                    }
-
-                }
-
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Correct)
-            </td>
-            <td>
-                <a asp-action="EditAnswer" asp-route-id="@item.Id" asp-route-QuizId="@ViewData["QuizId"]" asp-route-FotoURL="@item.FotoURL">Edit</a> |
-                <a asp-action="DeleteAnswer" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Correct)
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-action="EditAnswer" asp-route-id="@item.Id" asp-route-QuizId="@ViewData["QuizId"]" asp-route-FotoURL="@item.FotoURL">Edit</a>
+                    <a class="btn btn-danger" asp-action="DeleteAnswer" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
-<a asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Back to Questions</a>
+<a class="btn btn-primary" asp-action="QuizQuestions" asp-route-id="@ViewData["QuizId"]">Back to Questions</a>

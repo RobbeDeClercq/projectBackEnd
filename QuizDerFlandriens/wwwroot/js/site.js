@@ -7,8 +7,10 @@ function answerDiscrptionOnchange() {
     var fileDOM = document.getElementById("fileinput");
     if (descriptDOM != "") {
         fileDOM.disabled = true;
+        fileDOM.required = false;
     } else {
         fileDOM.disabled = false;
+        fileDOM.required = true;
     }
 }
 
@@ -17,7 +19,9 @@ function answerFileOnchange() {
     var fileDOM = document.getElementById("fileinput").value;
     if (fileDOM != "") {
         descriptDOM.disabled = true;
+        descriptDOM.required = false;
     } else {
         descriptDOM.disabled = false;
+        descriptDOM.required = true;
     }
 }
