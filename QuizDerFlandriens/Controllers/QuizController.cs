@@ -22,6 +22,15 @@ namespace QuizDerFlandriens.Controllers
         {
             IEnumerable<Quiz> quizzes = null;
             quizzes = await quizRepo.GetAllQuizzesAsync();
+            foreach (Quiz quiz in quizzes)
+            {
+                foreach (Question question in quiz.Questions)
+                {
+                    IEnumerable<Answer> answersEnum = await quizRepo.GetAllAnswersByQuestionId(question.Id);
+                    List<Answer> answers = answersEnum.ToList();
+                    question.Answers = answers;
+                }
+            }
             return View(quizzes);
         }
     }
