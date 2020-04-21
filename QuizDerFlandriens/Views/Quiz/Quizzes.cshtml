@@ -19,7 +19,7 @@
         foreach (var item in Model)
         {
             bool isValidQuiz = true;
-            if (item.Questions.Count() != 0)
+            if (item.Questions.Count() > 1)
             {
                 List<bool> validQuestions = new List<bool>();
                 foreach (Question question in item.Questions)
@@ -122,8 +122,11 @@
                             }
                         </div>
                     </div>
-                    counter++;
-                }
+                                            counter++;
+                                        }
+            }
+            else {
+                isValidQuiz = false;
             }
             validQuizzes.Add(isValidQuiz);
         }

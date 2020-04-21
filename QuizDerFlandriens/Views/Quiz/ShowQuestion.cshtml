@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "ShowQuestion";
 }
-
+<div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: @ViewData["ProgressPercentage"]%;" aria-valuenow="@ViewData["ProgressPercentage"]" aria-valuemin="0" aria-valuemax="@ViewData["PotentialScore"]"></div>
+</div>
 <h1>@Model.Description</h1>
 <h5 class="text-primary">Current Score: @ViewData["Score"]/@ViewData["PotentialScore"]</h5>
 <hr />

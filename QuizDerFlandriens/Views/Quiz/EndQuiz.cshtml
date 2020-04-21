@@ -1,0 +1,16 @@
+﻿@model QuizDerFlandriens.Models.Result
+
+@{
+    ViewData["Title"] = "EndQuiz";
+}
+
+<h1>Your result of the quiz: @ViewData["QuizName"]</h1>
+
+<div class="jumbotron">
+    <h2 class="display-2">@ViewData["PersonName"]</h2>
+    <h1 class="display-3">Your score: @Model.Score/@ViewData["MaxScore"]</h1>
+    <hr class="my-4">
+    <p class="lead">
+        <a class="btn btn-success btn-lg" asp-action="Quizzes" role="button">Back to main menu</a>
+    </p>
+</div>
