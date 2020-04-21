@@ -11,6 +11,10 @@
     {
         errorString = "<h3 class='text-danger'>There are no questions in this quiz</h3>";
     }
+    else if (Model.Count() < 4)
+    {
+        errorString = "<h3 class='text-warning'>There are not enough questions in this quiz</h3>";
+    }
     if(errorString != "")
     {
         @Html.Raw(errorString);

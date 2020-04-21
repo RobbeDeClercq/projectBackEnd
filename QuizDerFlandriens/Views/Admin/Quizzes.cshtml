@@ -34,6 +34,11 @@
                 error = true;
                 errorString = "<br><span style='color: white; font-weight: 600;'>There are no questions in this quiz</span>";
             }
+            else if (item.Questions.Count() < 4)
+            {
+                error = true;
+                errorString = "<br><span style='color: white; font-weight: 600;'>There are not enough questions in this quiz</span>";
+            }
             else
             {
                 bool questionError = false;
