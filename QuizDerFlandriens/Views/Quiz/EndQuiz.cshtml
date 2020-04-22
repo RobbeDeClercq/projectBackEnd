@@ -2,15 +2,31 @@
 
 @{
     ViewData["Title"] = "EndQuiz";
+    List<Question> wrongQuestions = ViewData["WrongQuestions"] as List<Question>; 
 }
 
 <h1>Your result of the quiz: @ViewData["QuizName"]</h1>
 
 <div class="jumbotron">
-    <h2 class="display-2">@ViewData["PersonName"]</h2>
-    <h1 class="display-3">Your score: @Model.Score/@ViewData["MaxScore"]</h1>
+    <h2>@ViewData["PersonName"]</h2>
+    <h1>Your score: @Model.Score/@ViewData["MaxScore"]</h1>
     <hr class="my-4">
     <p class="lead">
-        <a class="btn btn-success btn-lg" asp-action="Quizzes" role="button">Back to main menu</a>
+        <a class="btn btn-success btn-lg" asp-action="Quizzes" role="button">Back to main menu</a>&nbsp;
+        <a class="btn btn-secondary" asp-action="QuizScores" asp-route-id="@Model.QuizId" asp-route-quizName="@Model.Quiz.Subject">Scores</a>
     </p>
+
+    @if (wrongQuestions.Count() != 0)
+    {
+        <h2>These are your wrong questions</h2>
+    }
+    @foreach (var item in wrongQuestions)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@item.Description</h5>
+            </div>
+        </div>
+    }
 </div>
+

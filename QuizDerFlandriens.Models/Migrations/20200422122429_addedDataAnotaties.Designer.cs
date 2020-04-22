@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizDerFlandriens.Models.Data;
 
 namespace QuizDerFlandriens.Models.Migrations
 {
     [DbContext(typeof(QuizDerFlandriensContext))]
-    partial class QuizDerFlandriensContextModelSnapshot : ModelSnapshot
+    [Migration("20200422122429_addedDataAnotaties")]
+    partial class addedDataAnotaties
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -164,9 +166,11 @@ namespace QuizDerFlandriens.Models.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FotoURL")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("QuestionId")

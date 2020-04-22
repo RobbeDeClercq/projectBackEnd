@@ -71,7 +71,7 @@
                 }
                 else
                 {
-                    if (counter == 3)
+                    if ((counter % 3) == 0)
                     {
                         @Html.Raw("</div>")
                         @Html.Raw("<div class='card-deck'>")
@@ -102,7 +102,10 @@
                         }
                         <div class="card-body">
                             <p class="card-text">@item.Description</p>
-                            <a class="btn btn-primary stretched-link" asp-action="PlayQuiz" asp-route-id="@item.Id">Play Quiz!</a>
+                            <a class="btn btn-primary" asp-action="PlayQuiz" asp-route-id="@item.Id">Play Quiz!</a>
+                            &nbsp;
+                            <a class="btn btn-secondary" asp-action="QuizScores" asp-route-id="@item.Id" asp-route-quizName="@item.Subject">Scores</a>
+                            
                         </div>
                         <div class="card-footer">
                             @{
@@ -122,8 +125,8 @@
                             }
                         </div>
                     </div>
-                                            counter++;
-                                        }
+                    counter++;
+                }
             }
             else {
                 isValidQuiz = false;

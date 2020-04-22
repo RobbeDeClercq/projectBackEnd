@@ -102,6 +102,7 @@ namespace QuizDerFlandriens.Models.Repositories
                 }
 
                 context.Questions.RemoveRange(context.Questions.Where(e => e.QuizId == QuizId).Include(e => e.Answers));
+                context.Results.RemoveRange(context.Results.Where(e => e.QuizId == QuizId));
 
                 var result = context.Quizzes.Remove(quiz);
 

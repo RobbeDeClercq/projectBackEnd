@@ -11,8 +11,16 @@
 <hr />
 
 <div class="card-deck">
+    @{ 
+        int counter = 0;
+    }
     @foreach (Answer answer in Model.Answers)
     {
+        if(counter%2 == 0)
+        {
+            @Html.Raw("</div>");
+            @Html.Raw("<div class='card-deck'>");
+        }
         if (answer.Description != null)
         {
             <div class="card btn btn-primary mb-@Model.Answers.Count()">
@@ -22,9 +30,7 @@
                                             "
                        asp-action="CheckAnswer" 
                        asp-route-isCorrect="@answer.Correct"
-                       asp-route-QuizId="@Model.QuizId"
-                       asp-route-currentQuestion="@ViewData["PotentialScore"]"
-                       asp-route-score="@ViewData["Score"]">@answer.Description</a></h5>
+                       asp-route-id="@answer.QuestionId">@answer.Description</a></h5>
             </div>
         }
         else if(answer.FotoURL != null)
@@ -39,15 +45,14 @@
                                             "
                        asp-action="CheckAnswer" 
                        asp-route-isCorrect="@answer.Correct"
-                       asp-route-QuizId="@Model.QuizId"
-                       asp-route-currentQuestion="@ViewData["PotentialScore"]"
-                       asp-route-score="@ViewData["Score"]">
+                       asp-route-id="@answer.QuestionId">
                             <img class="card-img-top" src="@photoPath" asp-append-version="true" />
                         </a>
                     }                                        
                 </div>
             </div>
         }
+        counter++;
     }
 </div>
     
