@@ -185,3 +185,6 @@ C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcor
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\bin\Debug\netcoreapp3.1\xunit.abstractions.dll
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\bin\Debug\netcoreapp3.1\xunit.core.dll
 C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\obj\Debug\netcoreapp3.1\Razor\Views\Quiz\QuizScores.cshtml.g.cs
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\Robbe\Desktop\BackEnd\projectBackEnd\QuizDerFlandriens\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll

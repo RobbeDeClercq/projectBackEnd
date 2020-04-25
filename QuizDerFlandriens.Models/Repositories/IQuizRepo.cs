@@ -7,6 +7,7 @@ namespace QuizDerFlandriens.Models.Repositories
     public interface IQuizRepo
     {
         Task<IEnumerable<Difficulty>> GetAllDifficultiesAsync();
+        Task<Difficulty> GetDifficultyForIdAsync(Guid DifficultyId);
         Task<Person> GetPersonForIdAsync(string id);
         Task<Question> AddQuestion(Question question);
         Task<Quiz> AddQuiz(Quiz quiz);

@@ -40,6 +40,21 @@ namespace QuizDerFlandriens.Models.Repositories
             var result = context.Difficulties;
             return await Task.FromResult(result);
         }
+        public async Task<Difficulty> GetDifficultyForIdAsync(Guid DifficultyId)
+        {
+            try
+            {
+                var result = context.Difficulties.Where(e => e.Id == DifficultyId).FirstOrDefault<Difficulty>();
+
+                return await Task.FromResult(result);
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+                var obj = new Difficulty();
+                return obj;
+            }
+        }
 
         //Quiz
         public async Task<Quiz> AddQuiz(Quiz quiz)
@@ -58,14 +73,14 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Quiz>> GetAllQuizzesAsync()
         {
-            var result = context.Quizzes.Include(e => e.Difficulty).Include(e => e.Questions).Include(e => e.Results).OrderByDescending(e => e.Subject);
+            var result = context.Quizzes.Include(e => e.Difficulty).Include(e => e.Results).Include(e => e.Questions).OrderByDescending(e => e.Subject);
             return await Task.FromResult(result);
         }
         public async Task<Quiz> GetQuizForIdAsync(Guid QuizId)
         {
             try
             {
-                var result = context.Quizzes.Include(e => e.Results).Include(e => e.Difficulty).Where(e => e.Id == QuizId).FirstOrDefault<Quiz>();
+                var result = context.Quizzes.Include(e => e.Results).Include(e => e.Questions).Include(e => e.Difficulty).Where(e => e.Id == QuizId).FirstOrDefault<Quiz>();
 
                 return await Task.FromResult(result);
             }
