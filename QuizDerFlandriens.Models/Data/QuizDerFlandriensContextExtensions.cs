@@ -41,9 +41,8 @@ namespace QuizDerFlandriens.Models.Data
 
                     var userResult = await userMgr.CreateAsync(user, "Docent@1");
                     var roleResult = await userMgr.AddToRoleAsync(user, "Admin");
-                    var roleResult2 = await userMgr.AddToRoleAsync(user, "Player");
 
-                    if (!roleResult.Succeeded && !roleResult2.Succeeded)
+                    if (!roleResult.Succeeded)
                     {
                         throw new InvalidOperationException("Failed to build user and roles");
                     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,12 +38,6 @@ namespace QuizDerFlandriens.Controllers
             foreach(Quiz quiz in quizzes)
             {
                 IEnumerable<Question> questionsEnum = await quizRepo.GetAllQuestionsByQuizId(quiz.Id);
-                foreach(Question question in questionsEnum)
-                {
-                    IEnumerable<Answer> answersEnum = await quizRepo.GetAllAnswersByQuestionId(question.Id);
-                    List<Answer> answers = answersEnum.ToList();
-                    question.Answers = answers;
-                }
                 List<Question> questions = questionsEnum.ToList();
                 quiz.Questions = questions;
             }
@@ -107,9 +102,11 @@ namespace QuizDerFlandriens.Controllers
                 }
                 return RedirectToAction(nameof(Quizzes));
             }
-            catch
+            catch(Exception exc)
             {
-                return View();
+                Debug.WriteLine($"Update {quiz.Subject} failed.{ exc.Message} ");
+                ModelState.AddModelError("", "Update action failed." + exc.Message);
+                return View(quiz);
             }
         }
         public async Task<IActionResult> DeleteQuiz(Guid id)
@@ -174,12 +171,6 @@ namespace QuizDerFlandriens.Controllers
             ViewData["QuizName"] = quiz.Subject;
             IEnumerable<Question> questions = null;
             questions = await quizRepo.GetAllQuestionsByQuizId(id);
-            foreach (Question question in questions)
-            {
-                IEnumerable<Answer> answersEnum = await quizRepo.GetAllAnswersByQuestionId(question.Id);
-                List<Answer> answers = answersEnum.ToList();
-                question.Answers = answers;
-            }
             return View(questions);
         }
         public async Task<IActionResult> CreateQuestion(Guid id)

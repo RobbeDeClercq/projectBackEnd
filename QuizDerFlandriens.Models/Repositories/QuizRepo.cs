@@ -147,7 +147,7 @@ namespace QuizDerFlandriens.Models.Repositories
         }
         public async Task<IEnumerable<Question>> GetAllQuestionsByQuizId(Guid QuizId)
         {
-            var result = context.Questions.Where(e => e.QuizId == QuizId).OrderByDescending(e => e.Description);
+            var result = context.Questions.Include(e => e.Answers).Where(e => e.QuizId == QuizId).OrderByDescending(e => e.Description);
             return await Task.FromResult(result);
         }
         public async Task<Question> GetQuestionForIdAsync(Guid QuestionId)
