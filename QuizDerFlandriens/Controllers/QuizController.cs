@@ -12,7 +12,6 @@ using QuizDerFlandriens.Models.Repositories;
 
 namespace QuizDerFlandriens.Controllers
 {
-    [Authorize]
     public class QuizController : Controller
     {
         private IQuizRepo quizRepo;
@@ -47,17 +46,20 @@ namespace QuizDerFlandriens.Controllers
             }
             return View(quizzes);
         }
+        [Authorize(Roles = "Player")]
         public async Task<IActionResult> QuizScores(Guid id, string quizName)
         {
             var results = await quizRepo.GetAllResultsByQuizId(id);
             ViewData["QuizName"] = quizName;
             return View(results);
         }
+        [Authorize(Roles = "Player")]
         public IActionResult PlayQuiz(Guid id)
         {
             QuizController.QuizId = id;
             return RedirectToAction(nameof(ShowQuestion));
         }
+        [Authorize(Roles = "Player")]
         public async Task<IActionResult> ShowQuestion()
         {
             IEnumerable<Question> questions = await quizRepo.GetAllQuestionsByQuizId(QuizController.QuizId);
@@ -129,6 +131,7 @@ namespace QuizDerFlandriens.Controllers
             Question question = await quizRepo.GetQuestionForIdAsync(questionsList[QuizController.currentQuestion].Id);
             return View(question);
         }
+        [Authorize(Roles = "Player")]
         public async Task<IActionResult> CheckAnswer(bool isCorrect, Guid id)
         {
             if (isCorrect)
@@ -143,6 +146,7 @@ namespace QuizDerFlandriens.Controllers
             QuizController.currentQuestion++;
             return RedirectToAction(nameof(ShowQuestion));
         }
+        [Authorize(Roles = "Player")]
         public async Task<IActionResult> EndQuiz()
         {
             if (!ModelState.IsValid)

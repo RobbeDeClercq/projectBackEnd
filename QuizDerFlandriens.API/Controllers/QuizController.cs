@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizDerFlandriens.API.Models;
@@ -14,6 +16,7 @@ namespace QuizDerFlandriens.API.Controllers
     [ApiController]
     public class QuizController : ControllerBase
     {
+        private const string AuthSchemes = JwtBearerDefaults.AuthenticationScheme;
         private IQuizRepo quizRepo;
 
         public QuizController(IQuizRepo quizRepo)
@@ -22,6 +25,7 @@ namespace QuizDerFlandriens.API.Controllers
         }
 
         // GET: api/Quiz
+        [Authorize(AuthenticationSchemes = AuthSchemes)]
         [HttpGet]
         public async Task<ActionResult<List<Quiz_DTO>>> Get()
         {
@@ -36,6 +40,7 @@ namespace QuizDerFlandriens.API.Controllers
         }
 
         // GET: api/Quiz/{id}
+        [Authorize(AuthenticationSchemes = AuthSchemes)]
         [HttpGet("{id}", Name = "Get")]
         public async Task<ActionResult<Quiz_DTO>> Get(Guid id)
         {
@@ -50,6 +55,8 @@ namespace QuizDerFlandriens.API.Controllers
         }
 
         // POST: api/Quiz
+        [Authorize(AuthenticationSchemes = AuthSchemes)]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] Quiz_DTO quiz_DTO)
         {
@@ -79,18 +86,20 @@ namespace QuizDerFlandriens.API.Controllers
 
 
         // PUT: api/Quiz/{id}
+        [Authorize(AuthenticationSchemes = AuthSchemes)]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromForm] Quiz_DTO quiz_DTO)
         {
             var confirmedModel = new Quiz(); //te returnen DTO
             try
             {
-                //var obj = new Difficulty_DTO();
-                //quiz_DTO.Difficulty = QuizMapper.ConvertDifficultyTo_DTO(await quizRepo.GetDifficultyForIdAsync(quiz_DTO.DifficultyId), ref obj);
+                
                 //1. Validatie
                 if (!ModelState.IsValid) { return BadRequest(ModelState); }
                 //2.Entity (model) via de mapper ophalen
                 var model = new Quiz() { };
+                quiz_DTO.Id = id;
                 QuizMapper.ConvertQuizTo_Entity(quiz_DTO, ref model);
                 //3. Entity (model) toevoegen via het repo
                 confirmedModel = await quizRepo.UpdateQuiz(model);
@@ -107,6 +116,8 @@ namespace QuizDerFlandriens.API.Controllers
         }
 
         // DELETE: api/Quiz/{id}
+        [Authorize(AuthenticationSchemes = AuthSchemes)]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
