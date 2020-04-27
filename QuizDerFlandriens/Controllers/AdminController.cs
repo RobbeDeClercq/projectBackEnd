@@ -31,8 +31,12 @@ namespace QuizDerFlandriens.Controllers
         }
 
         //Quizzes
-        public async Task<IActionResult> Quizzes()
+        public async Task<IActionResult> Quizzes(string? exc)
         {
+            if (exc != null)
+            {
+                ViewData["Exception"] = exc;
+            }
             IEnumerable<Quiz> quizzes = null;
             quizzes = await quizRepo.GetAllQuizzesAsync();
             foreach(Quiz quiz in quizzes)
@@ -45,10 +49,17 @@ namespace QuizDerFlandriens.Controllers
         }
         public async Task<IActionResult> CreateQuiz()
         {
-            IEnumerable<Difficulty> difficulties = null;
-            difficulties = await quizRepo.GetAllDifficultiesAsync();
-            ViewData["Difficulties"] = difficulties;
-            return View();
+            try
+            {
+                IEnumerable<Difficulty> difficulties = null;
+                difficulties = await quizRepo.GetAllDifficultiesAsync();
+                ViewData["Difficulties"] = difficulties;
+                return View();
+            }
+            catch (Exception exc)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
+            }
         }
 
         [HttpPost]
@@ -66,26 +77,36 @@ namespace QuizDerFlandriens.Controllers
                 var created = await quizRepo.AddQuiz(quiz);
                 if (created == null)
                 {
-                    throw new Exception("Invalid Entry");
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Quiz did not create" });
                 }
 
                 return RedirectToAction(nameof(Quizzes));
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Create is giving an error: " + ex.Message);
-                return View();
+                return RedirectToAction(nameof(Quizzes), new { exc = ex.Message });
             }
         }
         public async Task<IActionResult> EditQuiz(Guid id)
         {
-            Quiz quiz = null;
-            quiz = await quizRepo.GetQuizForIdAsync(id);
-            ViewData["DifficultyId"] = quiz.DifficultyId;
-            IEnumerable<Difficulty> difficulties = null;
-            difficulties = await quizRepo.GetAllDifficultiesAsync();
-            ViewData["Difficulties"] = difficulties;
-            return View(quiz);
+            try
+            {
+                Quiz quiz = null;
+                quiz = await quizRepo.GetQuizForIdAsync(id);
+                if(quiz == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong quiz Id" });
+                }
+                ViewData["DifficultyId"] = quiz.DifficultyId;
+                IEnumerable<Difficulty> difficulties = null;
+                difficulties = await quizRepo.GetAllDifficultiesAsync();
+                ViewData["Difficulties"] = difficulties;
+                return View(quiz);
+            }
+            catch(Exception exc)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
+            }
         }
 
         [HttpPost]
@@ -98,22 +119,31 @@ namespace QuizDerFlandriens.Controllers
                 var result = await quizRepo.UpdateQuiz(quiz);
                 if (result == null)
                 {
-                    throw new Exception("Invalid Entry");
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Update quiz failed..." });
                 }
                 return RedirectToAction(nameof(Quizzes));
             }
             catch(Exception exc)
             {
-                Debug.WriteLine($"Update {quiz.Subject} failed.{ exc.Message} ");
-                ModelState.AddModelError("", "Update action failed." + exc.Message);
-                return View(quiz);
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
         }
         public async Task<IActionResult> DeleteQuiz(Guid id)
         {
-            Quiz quiz = null;
-            quiz = await quizRepo.GetQuizForIdAsync(id);
-            return View(quiz);
+            try
+            {
+                Quiz quiz = null;
+                quiz = await quizRepo.GetQuizForIdAsync(id);
+                if (quiz == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong quiz Id" });
+                }
+                return View(quiz);
+            }
+            catch(Exception exc)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
+            }
         }
 
         [HttpPost]
@@ -125,9 +155,9 @@ namespace QuizDerFlandriens.Controllers
                 await quizRepo.DeleteQuiz(id);
                 return RedirectToAction(nameof(Quizzes));
             }
-            catch
+            catch(Exception exc)
             {
-                return View();
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
         }
 
@@ -136,6 +166,10 @@ namespace QuizDerFlandriens.Controllers
         {
             IEnumerable<Result> results = null;
             results = await quizRepo.GetAllResultsByQuizId(QuizId);
+            if(QuizId == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+            }
             ViewData["QuizName"] = quizName;
             return View(results);
         }
@@ -143,6 +177,15 @@ namespace QuizDerFlandriens.Controllers
         {
             Result result = null;
             result = await quizRepo.GetResultByIdAsync(id);
+            if(result == null || id == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong ResultId" });
+            }
+            var obj = await quizRepo.GetQuizForIdAsync(QuizId);
+            if (obj == null || QuizId == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+            }
             ViewData["QuizId"] = QuizId;
             ViewData["QuizName"] = quizName;
             return View(result);
@@ -155,11 +198,16 @@ namespace QuizDerFlandriens.Controllers
             try
             {
                 await quizRepo.DeleteResult(id);
+                var obj = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (obj == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
                 return RedirectToAction(nameof(QuizResults), new { QuizId = QuizId, quizName = quizName });
             }
-            catch
+            catch(Exception exc)
             {
-                return View();
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
         }
 
@@ -168,6 +216,10 @@ namespace QuizDerFlandriens.Controllers
         {
             ViewData["QuizId"] = id;
             Quiz quiz = await quizRepo.GetQuizForIdAsync(id);
+            if (quiz == null || id == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+            }
             ViewData["QuizName"] = quiz.Subject;
             IEnumerable<Question> questions = null;
             questions = await quizRepo.GetAllQuestionsByQuizId(id);
@@ -177,6 +229,10 @@ namespace QuizDerFlandriens.Controllers
         {
             ViewData["QuizId"] = id;
             Quiz quiz = await quizRepo.GetQuizForIdAsync(id);
+            if (quiz == null || id == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+            }
             ViewData["QuizName"] = quiz.Subject;
             return View();
         }
@@ -190,12 +246,17 @@ namespace QuizDerFlandriens.Controllers
                 {
                     return BadRequest();
                 }
+                Quiz quiz = await quizRepo.GetQuizForIdAsync(id);
+                if (quiz == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
                 question.Id = Guid.NewGuid();
                 question.QuizId = id;
                 var created = await quizRepo.AddQuestion(question);
                 if (created == null)
                 {
-                    throw new Exception("Invalid Entry");
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Failed To Create Question" });
                 }
 
                 return RedirectToAction(nameof(CreateAnswer), new { id = question.Id, QuizId = id, createSingleAnswer = false });
@@ -209,6 +270,10 @@ namespace QuizDerFlandriens.Controllers
         public async Task<IActionResult> EditQuestion(Guid id)
         {
             Question question = await quizRepo.GetQuestionForIdAsync(id);
+            if (question == null || id == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+            }
             ViewData["QuizId"] = question.QuizId;
             return View(question);
         }
@@ -221,23 +286,31 @@ namespace QuizDerFlandriens.Controllers
             {
                 // TODO: Add update logic here
                 Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (quiz == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong quizId..." });
+                }
                 question.Quiz = quiz;
                 var result = await quizRepo.UpdateQuestion(question);
                 if (result == null)
                 {
-                    throw new Exception("Invalid Entry");
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Failed To update Question" });
                 }
                 return RedirectToAction(nameof(QuizQuestions), new { id = QuizId });
             }
-            catch
+            catch(Exception exc)
             {
-                return View();
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
         }
         public async Task<IActionResult> DeleteQuestion(Guid id)
         {
             Question question = null;
             question = await quizRepo.GetQuestionForIdAsync(id);
+            if (question == null || id == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+            }
             ViewData["QuizId"] = question.QuizId;
             return View(question);
         }
@@ -248,36 +321,73 @@ namespace QuizDerFlandriens.Controllers
         {
             try
             {
+                Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (quiz == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
                 await quizRepo.DeleteQuestion(id);
                 return RedirectToAction(nameof(QuizQuestions), new { id = QuizId });
             }
             catch(Exception exc)
             {
-                Console.WriteLine(exc.Message);
-                return View();
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
         }
 
         //Answers
         public async Task<IActionResult> QuestionAnswers(Guid id, Guid QuizId, string QuestionName)
         {
-            ViewData["QuestionId"] = id;
-            ViewData["QuizId"] = QuizId;
-            IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
-            ViewData["QuestionName"] = QuestionName;
-            return View(answers);
+            try
+            {
+                Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (quiz == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
+                Question question = await quizRepo.GetQuestionForIdAsync(id);
+                if (question == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+                }
+                ViewData["QuestionId"] = id;
+                ViewData["QuizId"] = QuizId;
+                IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
+                ViewData["QuestionName"] = QuestionName;
+                return View(answers);
+            }
+            catch(Exception exc)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
+            }
         }
         public async Task<IActionResult> CreateAnswer(Guid id, Guid QuizId, bool createSingleAnswer)
         {
-            IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
-            var answerCount = answers.Count();
-            Question question = await quizRepo.GetQuestionForIdAsync(id);
-            ViewData["QuestionName"] = question.Description;
-            ViewData["answersCount"] = answerCount;
-            ViewData["QuestionId"] = id;
-            ViewData["QuizId"] = QuizId;
-            ViewData["CreateSingle"] = createSingleAnswer;
-            return View();
+            try
+            {
+                Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (quiz == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
+                IEnumerable<Answer> answers = await quizRepo.GetAllAnswersByQuestionId(id);
+                var answerCount = answers.Count();
+                Question question = await quizRepo.GetQuestionForIdAsync(id);
+                if (question == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+                }
+                ViewData["QuestionName"] = question.Description;
+                ViewData["answersCount"] = answerCount;
+                ViewData["QuestionId"] = id;
+                ViewData["QuizId"] = QuizId;
+                ViewData["CreateSingle"] = createSingleAnswer;
+                return View();
+            }
+            catch (Exception exc)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
+            }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -315,11 +425,15 @@ namespace QuizDerFlandriens.Controllers
 
                 newAnswer.QuestionId = id;
                 Question question = await quizRepo.GetQuestionForIdAsync(id);
+                if (question == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+                }
                 newAnswer.Question = question;
                 var created = await quizRepo.AddAnswer(newAnswer);
                 if (created == null)
                 {
-                    throw new Exception("Invalid Entry");
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Answer failed to create" });
                 }
 
                 if (createSingleAnswer)
@@ -347,21 +461,39 @@ namespace QuizDerFlandriens.Controllers
         
         public async Task<IActionResult> EditAnswer(Guid id, Guid QuizId, string FotoURL)
         {
-            Answer answer = await quizRepo.GetAnswerForIdAsync(id);
-            AnswerEditViewModel answerEdit = new AnswerEditViewModel
+            try
             {
-                Id = answer.Id,
-                Description = answer.Description,
-                FotoURL = answer.FotoURL,
-                QuestionId = answer.QuestionId
-            };
-            Question question = await quizRepo.GetQuestionForIdAsync(answer.QuestionId);
-            ViewData["QuestionName"] = question.Description;
-            ViewData["QuestionId"] = answer.QuestionId;
-            ViewData["FotoURL"] = FotoURL;
-            ViewData["IsCorrect"] = answer.Correct;
-            ViewData["QuizId"] = QuizId;
-            return View(answerEdit);
+                Answer answer = await quizRepo.GetAnswerForIdAsync(id);
+                if (answer == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong AnswerId" });
+                }
+                AnswerEditViewModel answerEdit = new AnswerEditViewModel
+                {
+                    Id = answer.Id,
+                    Description = answer.Description,
+                    FotoURL = answer.FotoURL,
+                    QuestionId = answer.QuestionId
+                };
+                Question question = await quizRepo.GetQuestionForIdAsync(answer.QuestionId);
+
+                Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (quiz == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
+
+                ViewData["QuestionName"] = question.Description;
+                ViewData["QuestionId"] = answer.QuestionId;
+                ViewData["FotoURL"] = FotoURL;
+                ViewData["IsCorrect"] = answer.Correct;
+                ViewData["QuizId"] = QuizId;
+                return View(answerEdit);
+            }
+            catch (Exception exc)
+            {
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
+            }
         }
 
         [HttpPost]
@@ -401,33 +533,55 @@ namespace QuizDerFlandriens.Controllers
                 var result = await quizRepo.UpdateAnswer(answerUpdate);
                 if (result == null)
                 {
-                    throw new Exception("Invalid Entry");
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Failed to update answer..." });
                 }
+
+                Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
+                if (quiz == null || QuizId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuizId" });
+                }
+
                 Question question = await quizRepo.GetQuestionForIdAsync(QuestionId);
+                if (question == null || QuestionId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+                }
                 return RedirectToAction(nameof(QuestionAnswers), new { id = QuestionId, QuizId = QuizId, QuestionName = question.Description });
             }
-            catch
+            catch (Exception exc)
             {
-                return View();
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
         }
 
         public async Task<IActionResult> DeleteAnswer(Guid id)
         {
-            Answer answer = await quizRepo.GetAnswerForIdAsync(id);
-            Question question = null;
-            question = await quizRepo.GetQuestionForIdAsync(answer.QuestionId);
-            ViewData["QuizId"] = question.QuizId;
-            ViewData["QuestionId"] = answer.QuestionId;
-            if(answer.FotoURL != null)
+            try
             {
-                ViewData["FotoURL"] = answer.FotoURL;
+                Answer answer = await quizRepo.GetAnswerForIdAsync(id);
+                if (answer == null || id == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong AnswerId" });
+                }
+                Question question = null;
+                question = await quizRepo.GetQuestionForIdAsync(answer.QuestionId);
+                ViewData["QuizId"] = question.QuizId;
+                ViewData["QuestionId"] = answer.QuestionId;
+                if(answer.FotoURL != null)
+                {
+                    ViewData["FotoURL"] = answer.FotoURL;
+                }
+                else
+                {
+                    ViewData["FotoURL"] = "False";
+                }
+                return View(answer);
             }
-            else
+            catch (Exception exc)
             {
-                ViewData["FotoURL"] = "False";
+                return RedirectToAction(nameof(Quizzes), new { exc = exc.Message });
             }
-            return View(answer);
         }
 
         [HttpPost]
@@ -438,6 +592,10 @@ namespace QuizDerFlandriens.Controllers
             {
                 await quizRepo.DeleteAnswer(id);
                 Question question = await quizRepo.GetQuestionForIdAsync(QuestionId);
+                if (question == null || QuestionId == Guid.Empty)
+                {
+                    return RedirectToAction(nameof(Quizzes), new { exc = "Wrong QuestionId" });
+                }
                 return RedirectToAction(nameof(QuestionAnswers), new { id = QuestionId, QuizId = QuizId, QuestionName = question.Description });
             }
             catch (Exception exc)

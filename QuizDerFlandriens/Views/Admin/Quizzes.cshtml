@@ -4,6 +4,14 @@
     ViewData["Title"] = "Quizzes";
 }
 
+@if(ViewData["Exception"] != null)
+{
+    <div class="alert alert-danger alert-dismissible">
+        <a href="#" class="close stretched-link" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Error!</strong> @ViewData["Exception"]
+    </div>
+}
+
 <h1>Quizzes</h1>
 
 <p>
@@ -126,3 +134,14 @@
             
         </tbody>
 </table>
+
+@if(ViewData["Exception"] != null)
+{
+    <script type="text/javascript">
+        window.setTimeout(function() {
+        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+            $(this).remove(); 
+            });
+        }, 2000);
+    </script>
+}
