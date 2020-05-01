@@ -102,7 +102,7 @@
                         }
                     <div class="card-body">
                         <p class="card-text">@item.Description</p>
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Player"))
                         {
                             <a class="btn btn-primary text-white" asp-action="PlayQuiz" asp-route-id="@item.Id">Play Quiz!</a>
                             @Html.Raw("&nbsp;")

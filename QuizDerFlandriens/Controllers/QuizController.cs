@@ -18,6 +18,7 @@ namespace QuizDerFlandriens.Controllers
         private UserManager<Person> userManager;
         public static int score;
         public static int currentQuestion = 0;
+        public static int potentialScore;
         public static Guid QuizId;
         public static List<Question> wrongQuestions = new List<Question>();
 
@@ -31,6 +32,7 @@ namespace QuizDerFlandriens.Controllers
         {
             QuizController.score = 0;
             QuizController.currentQuestion = 0;
+            QuizController.potentialScore = 0;
             QuizController.wrongQuestions = new List<Question>();
 
             IEnumerable<Quiz> quizzes = null;
@@ -120,9 +122,9 @@ namespace QuizDerFlandriens.Controllers
                 questionsList.Remove(q);
             }
 
-            float progressPercentage = (float.Parse(QuizController.currentQuestion.ToString())/float.Parse(questionsList.Count().ToString()))*100;
+            double progressPercentage = Math.Floor((double.Parse(QuizController.currentQuestion.ToString())/float.Parse(questionsList.Count().ToString()))*100);
             ViewData["ProgressPercentage"] = progressPercentage;
-            ViewData["PotentialScore"] = QuizController.currentQuestion;
+            ViewData["PotentialScore"] = QuizController.potentialScore;
             ViewData["Score"] = QuizController.score;
             if(QuizController.currentQuestion == questionsList.Count())
             {
@@ -134,15 +136,16 @@ namespace QuizDerFlandriens.Controllers
         [Authorize(Roles = "Player, Admin")]
         public async Task<IActionResult> CheckAnswer(bool isCorrect, Guid id)
         {
+            Question question = await quizRepo.GetQuestionForIdAsync(id);
             if (isCorrect)
             {
-                QuizController.score++;
+                QuizController.score = QuizController.score + question.Answers.Count();
             }
             else
             {
-                Question question = await quizRepo.GetQuestionForIdAsync(id);
                 QuizController.wrongQuestions.Add(question);
             }
+            QuizController.potentialScore = QuizController.potentialScore + question.Answers.Count();
             QuizController.currentQuestion++;
             return RedirectToAction(nameof(ShowQuestion));
         }
@@ -164,7 +167,7 @@ namespace QuizDerFlandriens.Controllers
             string personId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             Person person = await userManager.FindByIdAsync(personId);
             result.Person = person;
-            ViewData["MaxScore"] = QuizController.currentQuestion;
+            ViewData["MaxScore"] = QuizController.potentialScore;
             ViewData["PersonName"] = person.Name;
             ViewData["QuizName"] = quiz.Subject;
             ViewData["WrongQuestions"] = QuizController.wrongQuestions;

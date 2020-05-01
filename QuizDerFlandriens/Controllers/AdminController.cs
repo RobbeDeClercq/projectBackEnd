@@ -285,13 +285,12 @@ namespace QuizDerFlandriens.Controllers
             try
             {
                 // TODO: Add update logic here
+                var result = await quizRepo.UpdateQuestion(question);
                 Quiz quiz = await quizRepo.GetQuizForIdAsync(QuizId);
                 if (quiz == null || QuizId == Guid.Empty)
                 {
                     return RedirectToAction(nameof(Quizzes), new { exc = "Wrong quizId..." });
                 }
-                question.Quiz = quiz;
-                var result = await quizRepo.UpdateQuestion(question);
                 if (result == null)
                 {
                     return RedirectToAction(nameof(Quizzes), new { exc = "Failed To update Question" });

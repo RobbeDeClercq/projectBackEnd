@@ -41,7 +41,7 @@ else
             <div class="form-group">
                 <label asp-for="Foto" class="control-label"></label>
                 <div class="custom-file">
-                    <input asp-for="Foto" required id="fileinput" class="form-control custom-file-input" onchange="answerFileOnchange()" />
+                    <input asp-for="Foto" required id="fileinput" class="form-control custom-file-input" onchange="answerFileOnchange()" accept="image/x-png,image/gif,image/jpeg" />
                     <label class="custom-file-label">Choose Photo...</label>
                 </div>
             </div>
